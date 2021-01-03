@@ -1,3 +1,9 @@
+#Tested on Python3 running on Linux Mint Cinnamon & MacOSX Catalina 
+#Requires PySimpleGUI, TensorFlow
+#Tested on wine quality dataset from UCI database (https://archive.ics.uci.edu/ml/datasets/wine+quality) 
+#Requires feature set to be in dtype=float
+
+
 import pandas as pd 
 import numpy as np 
 import tensorflow as tf 
@@ -23,7 +29,7 @@ layout = [[sg.Text('Your parameters')],
           [sg.Text('# neurons first layer: ', size=(15, 1)), sg.InputText()],
           [sg.Text('# neurons second layer: ', size=(15, 1)), sg.InputText()],
           [sg.Text('Batch size: ', size=(15, 1)), sg.InputText()],
-          [sg.Text('# of epochs ', size=(15, 1)), sg.InputText()]],
+          [sg.Text('# of epochs ', size=(15, 1)), sg.InputText()]], [sg.Text('Label column ID: ', size=(15, 1)), sg.InputText()]],
           [sg.Text('Regularization ', size=(15, 1)), sg.InputText()],
           [sg.Text('Dropout ', size=(15, 1)), sg.InputText()], title='Options',title_color='red', relief=sg.RELIEF_SUNKEN, tooltip='Enter your parameters')],
           [sg.Submit(), sg.Cancel()]]
@@ -32,7 +38,7 @@ window = sg.Window('Run Analysis', layout)
 event, values = window.read()
 window.close()
 
-def run_nn(nneurons_0=values[1], nneurons_1=values[2], batchsize=values[3], nepochs=values[4]):
+def run_nn(nneurons_0=values[1], nneurons_1=values[2], batchsize=values[3], nepochs=values[4], target_label=values[5):
 
 	path = os.getcwd()
 	os.chdir(path)
@@ -42,8 +48,8 @@ def run_nn(nneurons_0=values[1], nneurons_1=values[2], batchsize=values[3], nepo
 
 	print('reading in data...complete')
 
-	y = df.select_dtypes('int').values
-	X = df.select_dtypes(exclude='int').values
+	y = df[target_label].values
+	X = df.select_dtypes('float64').values
 
 	min_max_scaler = preprocessing.MinMaxScaler()
 	X_scale = min_max_scaler.fit_transform(X)
@@ -54,7 +60,7 @@ def run_nn(nneurons_0=values[1], nneurons_1=values[2], batchsize=values[3], nepo
 
 	y_train_sequential = tf.keras.utils.to_categorical(y_train)
 
-	if values[5] and values[6] == 'False':
+	if values[6] and values[7] == 'False':
 
 		model = Sequential([
 		  Dense(64, activation='relu', input_shape(11,)),
@@ -62,7 +68,7 @@ def run_nn(nneurons_0=values[1], nneurons_1=values[2], batchsize=values[3], nepo
 		  Dense(y_train_categorical.shape[1], activation='softmax')
 		])
 
-	if values[5] == 'True':
+	if values[6] == 'True':
 
 		model = Sequential([
   			Dense(64, activation='relu', input_shape(11,), kernel_regularizer=regularizers.l2(0.001)),
