@@ -58,7 +58,7 @@ def run_nn(nneurons_0=values[1], nneurons_1=values[2], batchsize=values[3], nepo
 
 	print('splitting into train and test split...complete')
 
-	y_train_sequential = tf.keras.utils.to_categorical(y_train)
+	y_train_categorical = tf.keras.utils.to_categorical(y_train)
 
 	if values[6] and values[7] == 'False':
 
